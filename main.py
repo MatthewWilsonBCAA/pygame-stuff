@@ -123,6 +123,13 @@ class Enemy(pygame.sprite.Sprite):
                 cur_y *= -3
         self.rect.move_ip(cur_x * enemy_speed, cur_y * enemy_speed)
 
+class Weapon(pygame.sprite.Sprite):
+    def __init__(self, cor, size):
+        super(Weapon, self).__init__()
+        self.surf = pygame.Surface(size)
+        self.surf.fill((colors["Blue"]))
+        self.rect = self.surf.get_rect(center=cor)
+
 door_warp_list = []
 selected_room = {}
 def enter_room(ID):
@@ -161,6 +168,11 @@ from pygame.locals import (
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
+    K_SPACE,
+    K_t,
+    K_f,
+    K_g,
+    K_h,
     KEYDOWN,
     QUIT,
 )
@@ -173,17 +185,35 @@ all_sprites.add(player)
 walls = pygame.sprite.Group()
 doors = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
+blasts = pygame.sprite.Group()
 enter_room(0)
 
 
 #player stats and stuff
 player_hp = 5
+attack = False
+attack_input = ''
 
+timer = 0
 running = True
 while running == True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == KEYDOWN:
+            if event.key == pygame.K_t:
+                attack_input = 't'
+                attack = True
+            elif event.key == pygame.K_f:
+                attack_input = 'f'
+                attack = True
+            elif event.key == pygame.K_g:
+                attack_input = 'g'
+                attack = True
+            elif event.key == pygame.K_h:
+                attack_input = 'h'
+                attack = True
+
 
     screen.fill(colors["Black"])
     z = 0
@@ -198,17 +228,43 @@ while running == True:
     for enemy in enemies:
         if pygame.sprite.collide_rect(player, enemy):
             enemy.kill()
-            player_hp -= 1
+            player_hp -= 3
+        if blasts and pygame.sprite.collide_rect(blast, enemy):
+            enemy.kill()
+            player_hp += 1
 
     if player_hp <= 0:
         player.kill()
         running = False
+
+    if attack == True and timer == 0:
+        if attack_input == 't':
+            blast = Weapon((player.rect.left + 12, player.rect.top - 12), (10, 60))
+        elif attack_input == 'f':
+            blast = Weapon((player.rect.left - 12, player.rect.top + 12), (60, 10))
+        elif attack_input == 'g':
+            blast = Weapon((player.rect.left + 12, player.rect.top + 36), (10, 60))
+        elif attack_input == 'h':
+            blast = Weapon((player.rect.left + 36, player.rect.top + 12), (60, 10))
+        blasts.add(blast)
+        all_sprites.add(blast)
+        timer = 50
+
+    if timer > 0:
+        timer -= 1
+        #if timer >= 20:
+            
+        if timer < 20:
+            blast.kill()
+        if timer == 0:
+            attack = False
     text = str(player_hp)
     screen.blit(font.render(text, True, (255, 255, 0)), (30, 30))
 
     #gets the player input, and changes the game state accordingly
-    pressed_keys = pygame.key.get_pressed()
-    player.update(pressed_keys)
+    if timer == 0:
+        pressed_keys = pygame.key.get_pressed()
+        player.update(pressed_keys)
     walls.update()
     enemies.update()
     doors.update()
