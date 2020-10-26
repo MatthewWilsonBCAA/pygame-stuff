@@ -130,6 +130,15 @@ class Weapon(pygame.sprite.Sprite):
         self.surf.fill((colors["Blue"]))
         self.rect = self.surf.get_rect(center=cor)
 
+class PickUp(pygame.sprite.Sprite):
+    def __init__(self, cor, size):
+        super(PickUp, self).__init__()
+        self.surf = pygame.Surface(size)
+        self.surf.fill((colors["Purple"]))
+        self.rect = self.surf.get_rect(center=cor)
+        self.type = type
+
+
 door_warp_list = []
 selected_room = {}
 def enter_room(ID):
@@ -139,6 +148,8 @@ def enter_room(ID):
         door.kill()
     for enemy in enemies:
         enemy.kill()
+    for pick in pick_ups:
+        pick.kill()
     global selected_room
     global door_warp_list
     selected_room = rooms.room_list[ID]
@@ -154,7 +165,11 @@ def enter_room(ID):
         elif "enemy" in wall:
             new_enemy = Enemy(cor, size)
             enemies.add(new_enemy)
-            all_sprites.add(new_enemy)  
+            all_sprites.add(new_enemy) 
+        elif "pick" in wall:
+            pick_up = PickUp(cor, size) 
+            pick_ups.add(pick_up)
+            all_sprites.add(pick_up)
         else:
             color = selected_room[wall]["color"]
             new_wall = Wall(cor, size, color)
@@ -186,6 +201,7 @@ walls = pygame.sprite.Group()
 doors = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 blasts = pygame.sprite.Group()
+pick_ups = pygame.sprite.Group()
 enter_room(0)
 
 
@@ -222,6 +238,12 @@ while running == True:
             player.rect = player.surf.get_rect(center=selected_room[door_warp_list[z]]["warp"])
             enter_room(selected_room[door_warp_list[z]]["id"])
         z += 1
+
+    for pick in pick_ups:
+        if pygame.sprite.collide_rect(player, pick):
+            player_hp += 1
+            pick.kill()
+
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)
 
@@ -231,7 +253,6 @@ while running == True:
             player_hp -= 3
         if blasts and pygame.sprite.collide_rect(blast, enemy):
             enemy.kill()
-            player_hp += 1
 
     if player_hp <= 0:
         player.kill()
@@ -258,7 +279,7 @@ while running == True:
             blast.kill()
         if timer == 0:
             attack = False
-    text = str(player_hp)
+    text = "HP: " + str(player_hp)
     screen.blit(font.render(text, True, (255, 255, 0)), (30, 30))
 
     #gets the player input, and changes the game state accordingly

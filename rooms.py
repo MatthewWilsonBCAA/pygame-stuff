@@ -53,7 +53,7 @@ main_hall = {
 
 throne_room = {
     "1": {
-        "cor": (400, 300),
+        "cor": (250, 250),
         "size": (50, 50),
         "color": "Purple"
     },
@@ -67,11 +67,28 @@ throne_room = {
         "size": (20, 100),
         "color": "Blue"
     },
+    "4": {
+        "cor": (100, 0),
+        "size": (200, 20),
+        "color": "Blue"
+    },
     "exit_L": {
         "cor": (0, 300),
         "size": (10, 200),
         "warp": (480, 300),
         "id": 1
+    },
+    "pick_1": {
+        "cor": (300, 250),
+        "size": (15, 15)
+    }
+}
+
+balcony = {
+    "1": {
+        "cor": (0, 50),
+        "size": (20, 300),
+        "color": "Blue"
     }
 }
 
