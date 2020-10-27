@@ -18,6 +18,7 @@ colors = {
 pygame.init()
 clock = pygame.time.Clock()
 font = pygame.font.SysFont('Consolas', 30)
+font_half = pygame.font.SysFont('Consolas', 15)
 
 #screen initialization
 SCREEN_WIDTH = 500
@@ -131,7 +132,7 @@ class Weapon(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=cor)
 
 class PickUp(pygame.sprite.Sprite):
-    def __init__(self, cor, size):
+    def __init__(self, cor, size): 
         super(PickUp, self).__init__()
         self.surf = pygame.Surface(size)
         self.surf.fill((colors["Purple"]))
@@ -152,6 +153,9 @@ def enter_room(ID):
         pick.kill()
     global selected_room
     global door_warp_list
+    global room_text
+    global room_text_cor
+    pygame.mixer.music.stop()
     selected_room = rooms.room_list[ID]
     door_warp_list = []
     for wall in selected_room:
@@ -170,6 +174,13 @@ def enter_room(ID):
             pick_up = PickUp(cor, size) 
             pick_ups.add(pick_up)
             all_sprites.add(pick_up)
+        elif "music" in wall:
+            mus = selected_room[wall]["id"]
+            pygame.mixer.music.load(mus)
+            pygame.mixer.music.play(-1)
+        elif "name" in wall:
+            room_text = selected_room[wall]["name"]
+            room_text_cor = cor
         else:
             color = selected_room[wall]["color"]
             new_wall = Wall(cor, size, color)
@@ -202,6 +213,8 @@ doors = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 blasts = pygame.sprite.Group()
 pick_ups = pygame.sprite.Group()
+room_text = ''
+room_text_cor = (0, 0)
 enter_room(0)
 
 
@@ -240,6 +253,7 @@ while running == True:
         z += 1
 
     for pick in pick_ups:
+        screen.blit(font_half.render("Healing", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
         if pygame.sprite.collide_rect(player, pick):
             player_hp += 1
             pick.kill()
@@ -248,6 +262,7 @@ while running == True:
         screen.blit(entity.surf, entity.rect)
 
     for enemy in enemies:
+        screen.blit(font_half.render("Guard", True, (255, 255, 0)), (enemy.rect.left, enemy.rect.top-20))
         if pygame.sprite.collide_rect(player, enemy):
             enemy.kill()
             player_hp -= 3
@@ -280,8 +295,8 @@ while running == True:
         if timer == 0:
             attack = False
     text = "HP: " + str(player_hp)
-    screen.blit(font.render(text, True, (255, 255, 0)), (30, 30))
-
+    screen.blit(font.render(text, True, (255, 255, 0)), (0, 30))
+    screen.blit(font.render(room_text, True, (255, 255, 0)), room_text_cor)
     #gets the player input, and changes the game state accordingly
     if timer == 0:
         pressed_keys = pygame.key.get_pressed()
