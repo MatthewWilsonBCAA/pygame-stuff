@@ -57,7 +57,9 @@ main_hall = {
     },
     "enemy_1": {
         "cor": (300, 300),
-        "size": (15, 15)
+        "size": (15, 15),
+        "hp": 40,
+        "power": 5
     },
     "music": {
         "cor": (0, 0),
@@ -109,6 +111,12 @@ throne_room = {
         "warp": (250, 480),
         "id": 3
     },
+    "exit_R": {
+        "cor": (500, 300),
+        "size": (10, 200),
+        "warp": (20, 300),
+        "id": 4
+    },
     "pick_1": {
         "cor": (300, 250),
         "size": (15, 15)
@@ -158,5 +166,7 @@ balcony = {
         "id": "wind.ogg"
     }
 }
+eatery = {
 
-room_list = [entry_room, main_hall, throne_room, balcony]
+}
+room_list = [entry_room, main_hall, throne_room, balcony, eatery]

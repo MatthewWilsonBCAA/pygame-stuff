@@ -78,10 +78,12 @@ class Door(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=cor)
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, cor, size):
+    def __init__(self, cor, size, hp, power):
         super(Enemy, self).__init__()
         self.surf = pygame.Surface(size)
         self.surf.fill((colors["Red"]))
+        self.hp = hp
+        self.power = power
         self.rect = self.surf.get_rect(center=cor)
     def update (self):
         self_x = self.rect.left
@@ -167,7 +169,9 @@ def enter_room(ID):
             doors.add(new_door) 
             all_sprites.add(new_door)
         elif "enemy" in wall:
-            new_enemy = Enemy(cor, size)
+            hp = selected_room[wall]["hp"]
+            power = selected_room[wall]["power"]
+            new_enemy = Enemy(cor, size, hp, power)
             enemies.add(new_enemy)
             all_sprites.add(new_enemy) 
         elif "pick" in wall:
@@ -219,10 +223,10 @@ enter_room(0)
 
 
 #player stats and stuff
-player_hp = 5
+player_hp = 25
 attack = False
 attack_input = ''
-
+i_timer = 0
 timer = 0
 running = True
 while running == True:
@@ -255,24 +259,28 @@ while running == True:
     for pick in pick_ups:
         screen.blit(font_half.render("Healing", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
         if pygame.sprite.collide_rect(player, pick):
-            player_hp += 1
+            player_hp += 5
             pick.kill()
 
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)
 
     for enemy in enemies:
-        screen.blit(font_half.render("Guard", True, (255, 255, 0)), (enemy.rect.left, enemy.rect.top-20))
-        if pygame.sprite.collide_rect(player, enemy):
-            enemy.kill()
-            player_hp -= 3
+        screen.blit(font_half.render("Guard: " + str(enemy.hp), True, (255, 255, 0)), (enemy.rect.left, enemy.rect.top-20))
+        if pygame.sprite.collide_rect(player, enemy) and i_timer == 0:
+            player_hp -= enemy.power
+            i_timer = 60
+
         if blasts and pygame.sprite.collide_rect(blast, enemy):
-            enemy.kill()
+            enemy.hp -= 1
+            if enemy.hp <= 0:
+                enemy.kill()
 
     if player_hp <= 0:
         player.kill()
         running = False
-
+    if i_timer > 0:
+        i_timer -= 1
     if attack == True and timer == 0:
         if attack_input == 't':
             blast = Weapon((player.rect.left + 12, player.rect.top - 12), (10, 60))
@@ -284,18 +292,18 @@ while running == True:
             blast = Weapon((player.rect.left + 36, player.rect.top + 12), (60, 10))
         blasts.add(blast)
         all_sprites.add(blast)
-        timer = 50
+        timer = 40
 
     if timer > 0:
         timer -= 1
         #if timer >= 20:
             
-        if timer < 20:
+        if timer < 10:
             blast.kill()
         if timer == 0:
             attack = False
     text = "HP: " + str(player_hp)
-    screen.blit(font.render(text, True, (255, 255, 0)), (0, 30))
+    screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left, player.rect.top-25))
     screen.blit(font.render(room_text, True, (255, 255, 0)), room_text_cor)
     #gets the player input, and changes the game state accordingly
     if timer == 0:
