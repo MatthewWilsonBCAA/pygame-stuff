@@ -59,6 +59,7 @@ main_hall = {
         "cor": (300, 300),
         "size": (15, 15),
         "hp": 40,
+        "xp": 14,
         "power": 5
     },
     "music": {
@@ -167,6 +168,10 @@ balcony = {
     }
 }
 eatery = {
-
+    "name": {
+        "cor": (250, 30),
+        "size": (0, 0),
+        "name": "Eatery"
+    }
 }
 room_list = [entry_room, main_hall, throne_room, balcony, eatery]

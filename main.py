@@ -78,11 +78,12 @@ class Door(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=cor)
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, cor, size, hp, power):
+    def __init__(self, cor, size, hp, xp, power):
         super(Enemy, self).__init__()
         self.surf = pygame.Surface(size)
         self.surf.fill((colors["Red"]))
         self.hp = hp
+        self.xp = xp
         self.power = power
         self.rect = self.surf.get_rect(center=cor)
     def update (self):
@@ -170,8 +171,9 @@ def enter_room(ID):
             all_sprites.add(new_door)
         elif "enemy" in wall:
             hp = selected_room[wall]["hp"]
+            xp = selected_room[wall]["xp"]
             power = selected_room[wall]["power"]
-            new_enemy = Enemy(cor, size, hp, power)
+            new_enemy = Enemy(cor, size, hp, xp, power)
             enemies.add(new_enemy)
             all_sprites.add(new_enemy) 
         elif "pick" in wall:
@@ -203,6 +205,7 @@ from pygame.locals import (
     K_f,
     K_g,
     K_h,
+    K_s,
     KEYDOWN,
     QUIT,
 )
@@ -224,11 +227,23 @@ enter_room(0)
 
 #player stats and stuff
 player_hp = 25
+player_max_hp = 25
+player_xp = 0
+player_lv = 1
+player_str = 1
+player_pow = 1
+player_def = 1
 attack = False
 attack_input = ''
 i_timer = 0
 timer = 0
 running = True
+showStats = False
+
+#for weapon stats
+weapon_power = 1
+weapon_length = 60
+
 while running == True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -247,6 +262,9 @@ while running == True:
                 attack_input = 'h'
                 attack = True
 
+            if event.key == pygame.K_s:
+                showStats = not showStats
+
 
     screen.fill(colors["Black"])
     z = 0
@@ -261,19 +279,21 @@ while running == True:
         if pygame.sprite.collide_rect(player, pick):
             player_hp += 5
             pick.kill()
-
+    if player_hp > player_max_hp:
+        player_hp = player_max_hp
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)
 
     for enemy in enemies:
         screen.blit(font_half.render("Guard: " + str(enemy.hp), True, (255, 255, 0)), (enemy.rect.left, enemy.rect.top-20))
         if pygame.sprite.collide_rect(player, enemy) and i_timer == 0:
-            player_hp -= enemy.power
+            player_hp -= max(enemy.power - player_def, 1)
             i_timer = 60
 
         if blasts and pygame.sprite.collide_rect(blast, enemy):
-            enemy.hp -= 1
+            enemy.hp -= 1 + player_str
             if enemy.hp <= 0:
+                player_xp += enemy.xp
                 enemy.kill()
 
     if player_hp <= 0:
@@ -302,8 +322,27 @@ while running == True:
             blast.kill()
         if timer == 0:
             attack = False
-    text = "HP: " + str(player_hp)
+
+    if player_xp > (player_lv * 50):
+        player_xp -= player_lv * 50
+        player_lv += 1
+        player_max_hp += random.randint(2, 4)
+        player_str += random.randint(1, 2)
+        player_pow += random.randint(1, 2)
+        player_def += random.randint(1, 2)
+
+
+    #used for drawing stats on screen
+    text = "HP: " + str(player_hp) + " / " + str(player_max_hp)
     screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left, player.rect.top-25))
+    if showStats == True:
+        text = "Lv " + str(player_lv) + " / XP: " + str(player_xp)
+        screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 25, player.rect.top+25))
+        text = "STR: " + str(player_str) + " / POW: " + str(player_pow)
+        screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 35, player.rect.top+40))
+        text = "DEF: " + str(player_def)
+        screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left, player.rect.top+55))
+        
     screen.blit(font.render(room_text, True, (255, 255, 0)), room_text_cor)
     #gets the player input, and changes the game state accordingly
     if timer == 0:
