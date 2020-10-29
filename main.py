@@ -400,6 +400,8 @@ if player_hp > 0:
         main.append(player_pow)
         main.append(player_def)
         main.append(gold)
+        main.append(weapon_power)
+        main.append(weapon_length_mod)
         main.append(player.rect.left)
         main.append(player.rect.top)
         json.dump(main, json_file)
