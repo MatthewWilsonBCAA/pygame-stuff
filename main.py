@@ -1,8 +1,13 @@
 import pygame
 import random
 import rooms
-from angles import get_angle, project
+import json
 
+try:
+    sudo = open("save.json", "r")
+    loading = True
+except:
+    loading = False
 
 #color initialization
 colors = {
@@ -206,6 +211,7 @@ from pygame.locals import (
     K_g,
     K_h,
     K_s,
+    K_w,
     KEYDOWN,
     QUIT,
 )
@@ -222,17 +228,38 @@ blasts = pygame.sprite.Group()
 pick_ups = pygame.sprite.Group()
 room_text = ''
 room_text_cor = (0, 0)
-enter_room(0)
 
-
-#player stats and stuff
-player_hp = 25
-player_max_hp = 25
-player_xp = 0
-player_lv = 1
-player_str = 1
-player_pow = 1
-player_def = 1
+if loading:
+    with open("save.json") as json_file:
+        main_save = json.load(json_file)
+        roomID  = main_save[0]
+        enter_room(roomID)
+        player_hp = main_save[1]
+        player_max_hp = main_save[2]
+        player_xp = main_save[3]
+        player_lv = main_save[4]
+        player_str = main_save[5]
+        player_pow = main_save[6]
+        player_def = main_save[7]
+        gold = main_save[8]
+        weapon_power = main_save[9]
+        weapon_length_mod = main_save[10]
+        player.rect.left = main_save[11]
+        player.rect.top = main_save[12]
+else:
+    enter_room(0)
+    roomID = 0
+    player_hp = 25
+    player_max_hp = 25
+    player_xp = 0
+    player_lv = 1
+    player_str = 1
+    player_pow = 1
+    player_def = 1
+    gold = 15
+    #for weapon stats
+    weapon_power = 1
+    weapon_length_mod = 0
 attack = False
 attack_input = ''
 i_timer = 0
@@ -240,9 +267,6 @@ timer = 0
 running = True
 showStats = False
 
-#for weapon stats
-weapon_power = 1
-weapon_length = 60
 
 while running == True:
     for event in pygame.event.get():
@@ -271,7 +295,8 @@ while running == True:
     for door in doors:
         if pygame.sprite.collide_rect(player, door):
             player.rect = player.surf.get_rect(center=selected_room[door_warp_list[z]]["warp"])
-            enter_room(selected_room[door_warp_list[z]]["id"])
+            roomID = selected_room[door_warp_list[z]]["id"] #used for saving their location!!!!
+            enter_room(roomID)
         z += 1
 
     for pick in pick_ups:
@@ -291,7 +316,7 @@ while running == True:
             i_timer = 60
 
         if blasts and pygame.sprite.collide_rect(blast, enemy):
-            enemy.hp -= 1 + player_str
+            enemy.hp -= weapon_power + player_str
             if enemy.hp <= 0:
                 player_xp += enemy.xp
                 enemy.kill()
@@ -301,15 +326,17 @@ while running == True:
         running = False
     if i_timer > 0:
         i_timer -= 1
+
+    #this is for attacking
     if attack == True and timer == 0:
         if attack_input == 't':
-            blast = Weapon((player.rect.left + 12, player.rect.top - 12), (10, 60))
+            blast = Weapon((player.rect.left + 12, player.rect.top - 12 - weapon_length_mod), (10, 60 + weapon_length_mod))
         elif attack_input == 'f':
-            blast = Weapon((player.rect.left - 12, player.rect.top + 12), (60, 10))
+            blast = Weapon((player.rect.left - 12 - weapon_length_mod, player.rect.top + 12), (60 + weapon_length_mod, 10))
         elif attack_input == 'g':
-            blast = Weapon((player.rect.left + 12, player.rect.top + 36), (10, 60))
+            blast = Weapon((player.rect.left + 12, player.rect.top + 36 + weapon_length_mod), (10, 60 + weapon_length_mod))
         elif attack_input == 'h':
-            blast = Weapon((player.rect.left + 36, player.rect.top + 12), (60, 10))
+            blast = Weapon((player.rect.left + 36 + weapon_length_mod, player.rect.top + 12), (60 + weapon_length_mod, 10))
         blasts.add(blast)
         all_sprites.add(blast)
         timer = 40
@@ -340,8 +367,8 @@ while running == True:
         screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 25, player.rect.top+25))
         text = "STR: " + str(player_str) + " / POW: " + str(player_pow)
         screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 35, player.rect.top+40))
-        text = "DEF: " + str(player_def)
-        screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left, player.rect.top+55))
+        text = "DEF: " + str(player_def) + " / Gold: " + str(gold)
+        screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 35, player.rect.top+55))
         
     screen.blit(font.render(room_text, True, (255, 255, 0)), room_text_cor)
     #gets the player input, and changes the game state accordingly
@@ -361,3 +388,18 @@ while running == True:
     # Flip the display
     pygame.display.flip()
     clock.tick(FRAMERATE)
+if player_hp > 0:
+    with open("save.json", "w") as json_file:
+        main = []
+        main.append(roomID)
+        main.append(player_hp)
+        main.append(player_max_hp)
+        main.append(player_xp)
+        main.append(player_lv)
+        main.append(player_str)
+        main.append(player_pow)
+        main.append(player_def)
+        main.append(gold)
+        main.append(player.rect.left)
+        main.append(player.rect.top)
+        json.dump(main, json_file)
