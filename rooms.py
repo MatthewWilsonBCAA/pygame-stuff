@@ -57,10 +57,11 @@ main_hall = {
     },
     "enemy_1": {
         "cor": (300, 300),
-        "size": (15, 15),
-        "hp": 40,
-        "xp": 14,
-        "power": 5
+        "size": (17, 15),
+        "hp": 30,
+        "xp": 4,
+        "power": 3,
+        "name": "Hound"
     },
     "music": {
         "cor": (0, 0),
@@ -120,7 +121,8 @@ throne_room = {
     },
     "pick_1": {
         "cor": (300, 250),
-        "size": (15, 15)
+        "size": (15, 15),
+        "p_type": 0
     },
     "music": {
         "cor": (0, 0),
@@ -172,6 +174,56 @@ eatery = {
         "cor": (250, 30),
         "size": (0, 0),
         "name": "Eatery"
+    },
+    "exit_L": {
+        "cor": (0, 300),
+        "size": (10, 200),
+        "warp": (480, 300),
+        "id": 2
+    },
+        "1": {
+        "cor": (250, 250),
+        "size": (300, 40),
+        "color": "Blue"
+    },
+    "2": {
+        "cor": (0, 50),
+        "size": (20, 300),
+        "color": "Blue"
+    },
+    "3": {
+        "cor": (0, 450),
+        "size": (20, 100),
+        "color": "Blue"
+    },
+    "4": {
+        "cor": (250, 0),
+        "size": (500, 20),
+        "color": "Blue"
+    },
+    "pick_1": {
+        "cor": (400, 350),
+        "size": (15, 15),
+        "p_type": 1
+    },
+    "enemy_1": {
+        "cor": (350, 350),
+        "size": (15, 15),
+        "hp": 300,
+        "xp": 7,
+        "power": 10,
+        "name": "Guard"
+    },
+    "enemy_2": {
+        "cor": (350, 150),
+        "size": (15, 15),
+        "hp": 300,
+        "xp": 7,
+        "power": 10,
+        "name": "Guard"
     }
 }
-room_list = [entry_room, main_hall, throne_room, balcony, eatery]
+lower_castle = {
+
+}
+room_list = [entry_room, main_hall, throne_room, balcony, eatery, lower_castle]

@@ -83,13 +83,14 @@ class Door(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=cor)
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, cor, size, hp, xp, power):
+    def __init__(self, cor, size, hp, xp, power, name):
         super(Enemy, self).__init__()
         self.surf = pygame.Surface(size)
         self.surf.fill((colors["Red"]))
         self.hp = hp
         self.xp = xp
         self.power = power
+        self.name = name
         self.rect = self.surf.get_rect(center=cor)
     def update (self):
         self_x = self.rect.left
@@ -125,11 +126,19 @@ class Enemy(pygame.sprite.Sprite):
             elif self_y < p_y:
                 cur_x = 0
                 cur_y = 1
-        if pygame.sprite.spritecollideany(self, walls):
-            if cur_x != 0:
-                cur_x *= -3
-            elif cur_y != 0:
-                cur_y *= -3
+        for i in walls:
+            if pygame.sprite.collide_rect(self, i):
+                if cur_x != 0 and cur_y != 0:
+                    if self.rect.left in range(i.rect.left - 2, i.rect.left + 2):
+                        cur_x *= -1
+                    else:
+                        cur_y *= -1
+                elif cur_x != 0 and cur_y == 0:
+                    cur_y = -1
+                    cur_x = 0
+                elif cur_x == 0 and cur_y != 0:
+                    cur_x = -1
+                    cur_y = 0
         self.rect.move_ip(cur_x * enemy_speed, cur_y * enemy_speed)
 
 class Weapon(pygame.sprite.Sprite):
@@ -140,12 +149,12 @@ class Weapon(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=cor)
 
 class PickUp(pygame.sprite.Sprite):
-    def __init__(self, cor, size): 
+    def __init__(self, cor, size, p_type): 
         super(PickUp, self).__init__()
         self.surf = pygame.Surface(size)
         self.surf.fill((colors["Purple"]))
         self.rect = self.surf.get_rect(center=cor)
-        self.type = type
+        self.p_type = p_type # 0 is healing, 1 is gold
 
 
 door_warp_list = []
@@ -178,17 +187,20 @@ def enter_room(ID):
             hp = selected_room[wall]["hp"]
             xp = selected_room[wall]["xp"]
             power = selected_room[wall]["power"]
-            new_enemy = Enemy(cor, size, hp, xp, power)
+            name = selected_room[wall]["name"]
+            new_enemy = Enemy(cor, size, hp, xp, power, name)
             enemies.add(new_enemy)
             all_sprites.add(new_enemy) 
         elif "pick" in wall:
-            pick_up = PickUp(cor, size) 
+            p_type = selected_room[wall]["p_type"]
+            pick_up = PickUp(cor, size, p_type) 
             pick_ups.add(pick_up)
             all_sprites.add(pick_up)
         elif "music" in wall:
             mus = selected_room[wall]["id"]
             pygame.mixer.music.load(mus)
             pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.2)
         elif "name" in wall:
             room_text = selected_room[wall]["name"]
             room_text_cor = cor
@@ -300,17 +312,24 @@ while running == True:
         z += 1
 
     for pick in pick_ups:
-        screen.blit(font_half.render("Healing", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
-        if pygame.sprite.collide_rect(player, pick):
-            player_hp += 5
-            pick.kill()
+        if pick.p_type == 0:
+            screen.blit(font_half.render("Healing", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
+            if pygame.sprite.collide_rect(player, pick):
+                player_hp += 5
+                pick.kill()
+        elif pick.p_type == 1:
+            screen.blit(font_half.render("Gold", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
+            if pygame.sprite.collide_rect(player, pick):
+                gold += 5
+                pick.kill()
+            
     if player_hp > player_max_hp:
         player_hp = player_max_hp
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)
 
     for enemy in enemies:
-        screen.blit(font_half.render("Guard: " + str(enemy.hp), True, (255, 255, 0)), (enemy.rect.left, enemy.rect.top-20))
+        screen.blit(font_half.render(enemy.name + ": " + str(enemy.hp), True, (255, 255, 0)), (enemy.rect.left, enemy.rect.top-20))
         if pygame.sprite.collide_rect(player, enemy) and i_timer == 0:
             player_hp -= max(enemy.power - player_def, 1)
             i_timer = 60
