@@ -61,7 +61,8 @@ main_hall = {
         "hp": 30,
         "xp": 4,
         "power": 3,
-        "name": "Hound"
+        "name": "Hound",
+        "speed": 1
     },
     "music": {
         "cor": (0, 0),
@@ -119,8 +120,24 @@ throne_room = {
         "warp": (20, 300),
         "id": 4
     },
+    "exit_D": {
+        "cor": (250, 500),
+        "size": (100, 10),
+        "warp": (250, 20),
+        "id": 5
+    },
     "pick_1": {
         "cor": (300, 250),
+        "size": (15, 15),
+        "p_type": 0
+    },
+    "pick_2": {
+        "cor": (200, 250),
+        "size": (15, 15),
+        "p_type": 0
+    },
+    "pick_3": {
+        "cor": (250, 300),
         "size": (15, 15),
         "p_type": 0
     },
@@ -170,7 +187,7 @@ balcony = {
     }
     ,
     "npc_1": {
-        "cor": (400, 400),
+        "cor": (200, 400),
         "size": (30, 30),
         "name": "John",
         "type": 0
@@ -188,7 +205,7 @@ eatery = {
         "warp": (480, 300),
         "id": 2
     },
-        "1": {
+    "1": {
         "cor": (250, 250),
         "size": (300, 40),
         "color": "Blue"
@@ -216,21 +233,63 @@ eatery = {
     "enemy_1": {
         "cor": (350, 350),
         "size": (15, 15),
-        "hp": 300,
+        "hp": 250,
         "xp": 7,
         "power": 10,
-        "name": "Guard"
+        "name": "Guard",
+        "speed": 1
     },
     "enemy_2": {
         "cor": (350, 150),
         "size": (15, 15),
-        "hp": 300,
+        "hp": 250,
         "xp": 7,
         "power": 10,
-        "name": "Guard"
+        "name": "Guard",
+        "speed": 1
     }
 }
 lower_castle = {
+    "name": {
+        "cor": (250, 30),
+        "size": (0, 0),
+        "name": "Lower Castle Halls"
+    },
+    "1": {
+        "cor": (250, 200),
+        "size": (400, 40),
+        "color": "Blue"
+    },
+    "exit_U": {
+        "cor": (250, 0),
+        "size": (100, 10),
+        "warp": (250, 480),
+        "id": 2
+    },
+    "enemy_1": {
+        "cor": (200, 400),
+        "size": (45, 45),
+        "hp": 2500,
+        "xp": 100,
+        "power": 20,
+        "name": "Dragon",
+        "speed": 2
+    },
+    "pick_1": {
+        "cor": (100, 350),
+        "size": (15, 15),
+        "p_type": 2
+    },
+    "pick_2": {
+        "cor": (100, 400),
+        "size": (15, 15),
+        "p_type": 2
+    },
+    "pick_3": {
+        "cor": (100, 450),
+        "size": (15, 15),
+        "p_type": 2
+    }
 
 }
 room_list = [entry_room, main_hall, throne_room, balcony, eatery, lower_castle]
