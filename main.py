@@ -16,7 +16,8 @@ colors = {
     "Yellow": (255, 245, 5),
     "Green": (0, 255, 0),
     "Purple": (255, 0, 255),
-    "Red": (255, 0, 0)
+    "Red": (255, 0, 0),
+    "White": (255, 255, 255)
     }
 
 #all of the initialization
@@ -39,7 +40,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
         self.surf = pygame.Surface((25, 25))
-        self.surf.fill((255, 255, 255))
+        self.surf.fill(colors["White"])
         self.rect = self.surf.get_rect()
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
@@ -156,6 +157,16 @@ class PickUp(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=cor)
         self.p_type = p_type # 0 is healing, 1 is gold
 
+class Merchant(pygame.sprite.Sprite):
+    def __init__(self, cor, size, name, n_type):
+        super(Merchant, self).__init__()
+        self.surf = pygame.Surface(size)
+        self.surf.fill((colors["White"]))
+        self.rect = self.surf.get_rect(center=cor)
+        self.name = name
+        self.n_type = n_type
+        
+
 
 door_warp_list = []
 selected_room = {}
@@ -168,6 +179,8 @@ def enter_room(ID):
         enemy.kill()
     for pick in pick_ups:
         pick.kill()
+    for merch in merchants:
+        merch.kill()
     global selected_room
     global door_warp_list
     global room_text
@@ -204,6 +217,12 @@ def enter_room(ID):
         elif "name" in wall:
             room_text = selected_room[wall]["name"]
             room_text_cor = cor
+        elif "npc" in wall:
+            name = selected_room[wall]["name"]
+            n_type = selected_room[wall]["type"]
+            merch = Merchant(cor, size, name, n_type) 
+            merchants.add(merch)
+            all_sprites.add(merch)
         else:
             color = selected_room[wall]["color"]
             new_wall = Wall(cor, size, color)
@@ -238,6 +257,7 @@ doors = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 blasts = pygame.sprite.Group()
 pick_ups = pygame.sprite.Group()
+merchants = pygame.sprite.Group()
 room_text = ''
 room_text_cor = (0, 0)
 
@@ -300,6 +320,13 @@ while running == True:
 
             if event.key == pygame.K_s:
                 showStats = not showStats
+            if event.key == pygame.K_w:
+                for i in merchants:
+                    if pygame.sprite.collide_rect(player, i):
+                        if gold >= (weapon_length_mod + 1) * 5:
+                            gold -= (weapon_length_mod + 1) * 5
+                            weapon_length_mod += 5
+                            weapon_power += 1
 
 
     screen.fill(colors["Black"])
@@ -388,6 +415,8 @@ while running == True:
         screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 35, player.rect.top+40))
         text = "DEF: " + str(player_def) + " / Gold: " + str(gold)
         screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 35, player.rect.top+55))
+        text = "Weapon Quality: " + str(weapon_power)
+        screen.blit(font_half.render(text, True, (255, 255, 0)), (player.rect.left - 35, player.rect.top+70))
         
     screen.blit(font.render(room_text, True, (255, 255, 0)), room_text_cor)
     #gets the player input, and changes the game state accordingly

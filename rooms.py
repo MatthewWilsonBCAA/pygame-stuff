@@ -168,6 +168,13 @@ balcony = {
         "size": (0, 0),
         "id": "wind.ogg"
     }
+    ,
+    "npc_1": {
+        "cor": (400, 400),
+        "size": (30, 30),
+        "name": "John",
+        "type": 0
+    }
 }
 eatery = {
     "name": {
