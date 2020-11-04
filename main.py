@@ -195,11 +195,11 @@ class Enemy(pygame.sprite.Sprite):
         #this is for summoners
         if self.ai == 1:
             self.timer += 1
-            if self.timer > 300:
+            if self.timer > 400:
                 self.timer = 0
                 new_enemy = Enemy(
-                    (self.rect.left + self.surf.get_size()[0] + 20, self.rect.top),
-                    (15, 15), 50, 0, 2, "Minion", 1, 0)
+                    (self.rect.left + self.surf.get_size()[0] + random.randint(20, 40), self.rect.top),
+                    (15, 15), 100, 1, 5, "Minion", 2, 0)
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
 
@@ -356,7 +356,7 @@ else:
     player_def = 1
     gold = 15
     #for weapon stats
-    weapon_power = 1
+    weapon_power = -1
     weapon_length_mod = 0
 attack = False
 attack_input = ''

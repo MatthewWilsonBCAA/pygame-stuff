@@ -103,6 +103,16 @@ throne_room = {
         "size": (200, 20),
         "color": "Blue"
     },
+    "6": {
+        "cor": (500, 50),
+        "size": (20, 300),
+        "color": "Blue"
+    },
+    "7": {
+        "cor": (500, 450),
+        "size": (20, 100),
+        "color": "Blue"
+    },
     "exit_L": {
         "cor": (0, 300),
         "size": (10, 200),
@@ -270,7 +280,7 @@ lower_castle = {
     },
     "1": {
         "cor": (250, 200),
-        "size": (400, 40),
+        "size": (400, 80),
         "color": "Blue"
     },
     "exit_U": {
@@ -303,7 +313,31 @@ lower_castle = {
         "cor": (100, 450),
         "size": (15, 15),
         "p_type": 2
+    },
+    "exit_R": {
+        "cor": (500, 50),
+        "size": (10, 100),
+        "warp": (20, 50),
+        "id": 6
     }
-
 }
-room_list = [entry_room, main_hall, throne_room, balcony, eatery, lower_castle]
+lower_castle_halls = {
+    "name": {
+        "cor": (150, 450),
+        "size": (0, 0),
+        "name": "Lower Castle Halls"
+    },
+    "1": {
+        "cor": (250, 200),
+        "size": (400, 80),
+        "color": "Blue"
+    },
+    "exit_L": {
+        "cor": (0, 50),
+        "size": (10, 100),
+        "warp": (480, 50),
+        "id": 5
+    }
+}
+
+room_list = [entry_room, main_hall, throne_room, balcony, eatery, lower_castle, lower_castle_halls]
