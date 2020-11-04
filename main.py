@@ -188,6 +188,7 @@ class Enemy(pygame.sprite.Sprite):
                 cur_y = 0
             if is_enemy == True:
                 cur_x = random.randint(-2, 2)
+                cur_y = random.randint(-2, 2)
         self.rect.move_ip(cur_x * self.speed, cur_y * self.speed)
         if debug:
             print(f"{self.name}: {cur_x}, {cur_y}")
@@ -395,9 +396,9 @@ while running == True:
             if event.key == pygame.K_w:
                 for i in merchants:
                     if pygame.sprite.collide_rect(player, i):
-                        if gold >= (weapon_length_mod + 1) * 20:
-                            gold -= (weapon_length_mod + 1) * 20
-                            weapon_length_mod += 5
+                        if gold >= (weapon_length_mod + 1) * 10:
+                            gold -= (weapon_length_mod + 1) * 10
+                            weapon_length_mod += 2
                             weapon_power += 1
 
 

@@ -264,7 +264,7 @@ eatery = {
 }
 lower_castle = {
     "name": {
-        "cor": (250, 30),
+        "cor": (150, 450),
         "size": (0, 0),
         "name": "Lower Castle Halls"
     },
@@ -282,9 +282,9 @@ lower_castle = {
     "enemy_1": {
         "cor": (200, 400),
         "size": (45, 45),
-        "hp": 2500,
-        "xp": 100,
-        "power": 20,
+        "hp": 25000,
+        "xp": 1000,
+        "power": 80,
         "name": "Dragon",
         "speed": 1,
         "ai": 0
