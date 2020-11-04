@@ -84,7 +84,7 @@ class Door(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=cor)
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, cor, size, hp, xp, power, name, speed):
+    def __init__(self, cor, size, hp, xp, power, name, speed, ai):
         super(Enemy, self).__init__()
         self.surf = pygame.Surface(size)
         self.surf.fill((colors["Red"]))
@@ -94,6 +94,8 @@ class Enemy(pygame.sprite.Sprite):
         self.name = name
         self.rect = self.surf.get_rect(center=cor)
         self.speed = speed
+        self.ai = ai
+        self.timer = 0
     def update (self):
         self_x = self.rect.left
         self_y = self.rect.top
@@ -129,6 +131,7 @@ class Enemy(pygame.sprite.Sprite):
                 cur_x = 0
                 cur_y = 1
         hit = False
+        is_enemy = False
         for i in walls:
             if pygame.sprite.collide_rect(self, i):
                 hit = True
@@ -136,11 +139,16 @@ class Enemy(pygame.sprite.Sprite):
         for i in enemies:
             if pygame.sprite.collide_rect(self, i) and i != self:
                 hit = True
+                is_enemy = True
                 temp = i
         if hit == True:
             if cur_x != 0 and cur_y != 0:
-                obj_wid = int(temp.surf.get_size()[0] / 2)
-                obj_hi = int(temp.surf.get_size()[1] / 2)
+                if is_enemy == False:
+                    obj_wid = int(temp.surf.get_size()[0] / 2)
+                    obj_hi = int(temp.surf.get_size()[1] / 2)
+                else:
+                    obj_wid = 50
+                    obj_hi = 50
                 is_dumb = 0
                 if self.rect.left >= temp.rect.left + obj_wid:
                     cur_x = -1
@@ -159,8 +167,8 @@ class Enemy(pygame.sprite.Sprite):
                     cur_x = 0
                     is_dumb += 1
                 if is_dumb > 1:
-                    cur_y *= -2
-                    cur_x *= -2
+                    cur_y *= -1
+                    cur_x *= -1
                 # else:
                 #     cur_y = random.randint(-10, 10)
                 #     cur_x = random.randint(-10, 10)
@@ -178,7 +186,21 @@ class Enemy(pygame.sprite.Sprite):
                 #     cur_x = -1
                 cur_x = cur_y
                 cur_y = 0
-        self.rect.move_ip(cur_x * speed, cur_y * speed)
+            if is_enemy == True:
+                cur_x = random.randint(-2, 2)
+        self.rect.move_ip(cur_x * self.speed, cur_y * self.speed)
+        if debug:
+            print(f"{self.name}: {cur_x}, {cur_y}")
+        #this is for summoners
+        if self.ai == 1:
+            self.timer += 1
+            if self.timer > 300:
+                self.timer = 0
+                new_enemy = Enemy(
+                    (self.rect.left + self.surf.get_size()[0] + 20, self.rect.top),
+                    (15, 15), 50, 0, 2, "Minion", 1, 0)
+                enemies.add(new_enemy)
+                all_sprites.add(new_enemy)
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, cor, size):
@@ -240,7 +262,8 @@ def enter_room(ID):
             power = selected_room[wall]["power"]
             name = selected_room[wall]["name"]
             speed = selected_room[wall]["speed"]
-            new_enemy = Enemy(cor, size, hp, xp, power, name, speed)
+            ai = selected_room[wall]["ai"]
+            new_enemy = Enemy(cor, size, hp, xp, power, name, speed, ai)
             enemies.add(new_enemy)
             all_sprites.add(new_enemy) 
         elif "pick" in wall:
@@ -282,6 +305,7 @@ from pygame.locals import (
     K_h,
     K_s,
     K_w,
+    K_b,
     KEYDOWN,
     QUIT,
 )
@@ -299,6 +323,8 @@ pick_ups = pygame.sprite.Group()
 merchants = pygame.sprite.Group()
 room_text = ''
 room_text_cor = (0, 0)
+
+debug = False
 
 if loading:
     with open("save.json") as json_file:
@@ -340,6 +366,11 @@ showStats = False
 
 
 while running == True:
+
+    if debug:
+        breakpoint()
+        debug = False
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -356,14 +387,16 @@ while running == True:
             elif event.key == pygame.K_h:
                 attack_input = 'h'
                 attack = True
+            elif event.key == pygame.K_b:
+                debug = True
 
             if event.key == pygame.K_s:
                 showStats = not showStats
             if event.key == pygame.K_w:
                 for i in merchants:
                     if pygame.sprite.collide_rect(player, i):
-                        if gold >= (weapon_length_mod + 1) * 5:
-                            gold -= (weapon_length_mod + 1) * 5
+                        if gold >= (weapon_length_mod + 1) * 20:
+                            gold -= (weapon_length_mod + 1) * 20
                             weapon_length_mod += 5
                             weapon_power += 1
 
@@ -384,14 +417,14 @@ while running == True:
                 player_hp += 5
                 pick.kill()
         elif pick.p_type == 1:
-            screen.blit(font_half.render("5 Gold", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
+            screen.blit(font_half.render("10 Gold", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
             if pygame.sprite.collide_rect(player, pick):
-                gold += 5
+                gold += 10
                 pick.kill()
         elif pick.p_type == 2:
-            screen.blit(font_half.render("25 Gold", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
+            screen.blit(font_half.render("20 Gold", True, (255, 255, 0)), (pick.rect.left, pick.rect.top-20))
             if pygame.sprite.collide_rect(player, pick):
-                gold += 25
+                gold += 20
                 pick.kill()
             
     if player_hp > player_max_hp:
@@ -400,7 +433,7 @@ while running == True:
         screen.blit(entity.surf, entity.rect)
     for merch in merchants:
         screen.blit(font_half.render("Stand on and press W", True, (255, 255, 0)), (merch.rect.left, merch.rect.top-40))
-        screen.blit(font_half.render("to upgrade weapon. Price: " + str((weapon_length_mod + 1) * 5), True, (255, 255, 0)), (merch.rect.left, merch.rect.top-20))
+        screen.blit(font_half.render("to upgrade weapon. Price: " + str((weapon_length_mod + 1) * 20), True, (255, 255, 0)), (merch.rect.left, merch.rect.top-20))
     for enemy in enemies:
         screen.blit(font_half.render(enemy.name + ": " + str(enemy.hp), True, (255, 255, 0)), (enemy.rect.left, enemy.rect.top-20))
         if pygame.sprite.collide_rect(player, enemy) and i_timer == 0:

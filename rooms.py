@@ -62,7 +62,8 @@ main_hall = {
         "xp": 4,
         "power": 3,
         "name": "Hound",
-        "speed": 1
+        "speed": 1,
+        "ai": 0
     },
     "music": {
         "cor": (0, 0),
@@ -237,7 +238,8 @@ eatery = {
         "xp": 7,
         "power": 10,
         "name": "Guard",
-        "speed": 1
+        "speed": 1,
+        "ai": 0
     },
     "enemy_2": {
         "cor": (350, 150),
@@ -246,7 +248,18 @@ eatery = {
         "xp": 7,
         "power": 10,
         "name": "Guard",
-        "speed": 1
+        "speed": 1,
+        "ai": 0
+    },
+    "enemy_3": {
+        "cor": (450, 350),
+        "size": (25, 25),
+        "hp": 700,
+        "xp": 20,
+        "power": 5,
+        "name": "Summoner",
+        "speed": 1,
+        "ai": 1
     }
 }
 lower_castle = {
@@ -273,7 +286,8 @@ lower_castle = {
         "xp": 100,
         "power": 20,
         "name": "Dragon",
-        "speed": 2
+        "speed": 1,
+        "ai": 0
     },
     "pick_1": {
         "cor": (100, 350),
