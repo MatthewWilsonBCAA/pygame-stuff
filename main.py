@@ -18,10 +18,6 @@ font_half = pygame.font.SysFont("Consolas", 15)
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# frame rate stuff
-FRAMERATE = 80
-
-
 door_warp_list = []
 selected_room = {}
 
