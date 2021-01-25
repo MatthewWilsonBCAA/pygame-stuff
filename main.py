@@ -220,6 +220,8 @@ while running == True:
         player_hp = player_max_hp
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)
+    for entity in enemies:
+        screen.blit(entity.surf, entity.rect)
     for merch in merchants:
         screen.blit(
             font_half.render("Stand on and press W", True, (255, 255, 0)),

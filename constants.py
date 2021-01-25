@@ -12,7 +12,7 @@ colors = {
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
 # frame rate stuff
-FRAMERATE = 40
+FRAMERATE = 60
 
 speed = 3
 enemy_speed = 1

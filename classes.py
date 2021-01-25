@@ -74,10 +74,10 @@ class Door(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, cor, size, hp, xp, power, name, speed, ai):
+    def __init__(self, cor, image_name, hp, xp, power, name, speed, ai):
         super(Enemy, self).__init__()
-        self.surf = pygame.Surface(size)
-        self.surf.fill((colors["Red"]))
+        self.surf = pygame.image.load(image_name).convert_alpha()
+        # self.surf.fill((colors["Red"]))
         self.hp = hp
         self.xp = xp
         self.power = power
@@ -195,7 +195,7 @@ class Enemy(pygame.sprite.Sprite):
                         + random.randint(20, 40),
                         self.rect.top,
                     ),
-                    (15, 15),
+                    "knight.png",
                     100,
                     1,
                     5,
@@ -204,7 +204,7 @@ class Enemy(pygame.sprite.Sprite):
                     0,
                 )
                 enemies.add(new_enemy)
-                all_sprites.add(new_enemy)
+                # all_sprites.add(new_enemy)
 
 
 class Weapon(pygame.sprite.Sprite):
